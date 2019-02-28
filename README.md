@@ -8,5 +8,5 @@ We include some circuits developed by the Writing Standardized Benchmarks team a
 
 ## Future Work
 
-1. Adding a tranpiler pass to return the final layout of the circuit to the original layout.
+1. Add a tranpiler pass to return the final layout of the circuit to the original layout.
 2. Modify the unitary simulator to sample noise models and incorporate Ignis functions.
