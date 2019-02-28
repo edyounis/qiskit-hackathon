@@ -1,4 +1,4 @@
-# qiskit-hackathon
+# Benchmarking Circuit Transformations using Noise Injection
 
 ## Abstract
 
