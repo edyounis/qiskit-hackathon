@@ -16,6 +16,7 @@ import random
 from math import pi
 import numpy as np
 from copy import deepcopy
+from itertools import permutations
 
 # Goal: Evaluate circuit transformers (compilers, etc) using a model
 #	   that measures correctness of final output when run on potential,
@@ -51,16 +52,16 @@ def evaluate_transformer ( A, circuit_set = None ):
 			fidelity_sum += compare_unitaries( ideal_result, noisy_results )
 
 		fidelity_avg = fidelity_sum / float( len( noisy_circuit_set ) )
-		print(fidelity_avg)
+
 		overall_fidelity_sum += fidelity_avg
 
 	overall_fidelity_avg = overall_fidelity_sum / float( len( circuit_set ) )
-	return (overall_fidelity_avg, transformed_circuit)
+	return overall_fidelity_avg
 
 
 # Generate a random set of circuits
 def generate_circuit_set ( ):
-	return [ build_model_circuit( 5, 5 ) for i in range( 10 ) ]
+	return [ build_model_circuit( 3, 1 ) for i in range( 10 ) ]
 
 unitary_backend = BasicAer.get_backend( 'unitary_simulator' )
 
@@ -86,7 +87,12 @@ def inject_noise ( circuit ):
 
 # Calculates process fidelity
 def compare_unitaries ( U1, U2 ):
-	return process_fidelity( U1, U2 )
+	fid_max = float('-inf')
+	for i in permutations( U1 ):
+		fid = process_fidelity( i, U2 )
+		if fid >= fid_max:
+			fid_max = fid
+	return fid_max
 	#overlap = np.trace(np.dot(U1.conj().transpose(), U2))
 	#return abs(overlap) / (len(U1)**2)
 
