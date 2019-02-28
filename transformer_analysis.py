@@ -22,12 +22,12 @@ from copy import deepcopy
 #	   noisy intermediate-scale quantum devices.
 def evaluate_transformer ( A, circuit_set = None ):
 
-	# Circuit set is a n-vector of circuits
-	circuit_set = circuit_set or generate_circuit_set()
-
 	# Set Random seed
 	random.seed(0)
 	np.random.seed(0)
+
+	# Circuit set is a n-vector of circuits
+	circuit_set = circuit_set or generate_circuit_set()
 
 	# Overall average calculation
 	overall_fidelity_sum = 0.
@@ -51,20 +51,21 @@ def evaluate_transformer ( A, circuit_set = None ):
 			fidelity_sum += compare_unitaries( ideal_result, noisy_results )
 
 		fidelity_avg = fidelity_sum / float( len( noisy_circuit_set ) )
-
+		print(fidelity_avg)
 		overall_fidelity_sum += fidelity_avg
 
 	overall_fidelity_avg = overall_fidelity_sum / float( len( circuit_set ) )
-	return overall_fidelity_avg
+	return (overall_fidelity_avg, transformed_circuit)
 
 
 # Generate a random set of circuits
 def generate_circuit_set ( ):
-	return [ build_model_circuit( 3, 5 ) for i in range( 10 ) ]
+	return [ build_model_circuit( 5, 5 ) for i in range( 10 ) ]
+
+unitary_backend = BasicAer.get_backend( 'unitary_simulator' )
 
 # Unitary Simulator that returns the unitary matrix representation for a quantum program
 def simulate ( circuit ):
-	unitary_backend = BasicAer.get_backend( 'unitary_simulator' )
 	unitary_job	 = execute( circuit, unitary_backend )
 	unitary_results = unitary_job.result()
 	unitary_matrix  = unitary_results.get_unitary( circuit )
@@ -86,6 +87,8 @@ def inject_noise ( circuit ):
 # Calculates process fidelity
 def compare_unitaries ( U1, U2 ):
 	return process_fidelity( U1, U2 )
+	#overlap = np.trace(np.dot(U1.conj().transpose(), U2))
+	#return abs(overlap) / (len(U1)**2)
 
 # Generate Random Circuit
 def build_model_circuit(width=3, depth=None):
